@@ -62,7 +62,7 @@ INCS_Debug := \
 	-I/Users/margret/Library/Caches/node-gyp/14.15.0/deps/zlib \
 	-I/Users/margret/Library/Caches/node-gyp/14.15.0/deps/v8/include \
 	-I/usr/local/Cellar/open-mesh/8.1/include \
-	-I/Users/margret/uuzuProjWorkspaca/otherTools/TriMesh-js/node_modules/node-addon-api
+	-I/Users/margret/TriMesh4Js/node_modules/node-addon-api
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=addon-trimesh' \
@@ -121,7 +121,7 @@ INCS_Release := \
 	-I/Users/margret/Library/Caches/node-gyp/14.15.0/deps/zlib \
 	-I/Users/margret/Library/Caches/node-gyp/14.15.0/deps/v8/include \
 	-I/usr/local/Cellar/open-mesh/8.1/include \
-	-I/Users/margret/uuzuProjWorkspaca/otherTools/TriMesh-js/node_modules/node-addon-api
+	-I/Users/margret/TriMesh4Js/node_modules/node-addon-api
 
 OBJS := \
 	$(obj).target/$(TARGET)/addon.o \
