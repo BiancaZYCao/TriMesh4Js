@@ -1,0 +1,19 @@
+{
+  "name": "triMesh4Js",
+  "version": "0.0.0",
+  "description": "Node.js OpenMesh C++ Addons with node-addon-api.",
+  "main": "AddonTriMeshTest.js",
+  "private": true,
+  "gypfile": true,
+  "engines": {
+    "node": "~10 >=10.20 || >=12.17"
+  },
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "delaunator": "^4.0.1",
+    "node-addon-api": "^3.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1"
+  }
+}

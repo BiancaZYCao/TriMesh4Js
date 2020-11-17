@@ -1,0 +1,1 @@
+cmd_Release/addon-trimesh.node := c++ -bundle -undefined dynamic_lookup -Wl,-no_pie -Wl,-search_paths_first -mmacosx-version-min=10.13 -arch x86_64 -L./Release -stdlib=libc++  -o Release/addon-trimesh.node Release/obj.target/addon-trimesh/addon.o Release/obj.target/addon-trimesh/myRealMesh.o -lOpenMeshTools.8.1 -lOpenMeshCore.8.1 -Wl,-rpath,/usr/local/Cellar/open-mesh/8.1/lib
