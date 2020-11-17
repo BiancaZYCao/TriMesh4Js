@@ -37,8 +37,8 @@ Plugins implementation - TriMesh:
 - [x] Add Face By Vertex Id
 - [x] Set Point By Vertex Id
 - [x] Add Face
-- [ ] Set Point
-- [ ] Get Points
+- [x] Set Point
+- [x] Get Points
 - [ ] More Pending ...
 
 ## Tests
