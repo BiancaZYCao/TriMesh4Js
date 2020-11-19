@@ -28,6 +28,8 @@ class MyMesh : public Napi::ObjectWrap<MyMesh> {
   void SetPoint(const Napi::CallbackInfo& info);
   Napi::Value GetPoints(const Napi::CallbackInfo& info);
 
+  Napi::Value VVIter(const Napi::CallbackInfo& info);
+
   // int valueOfFace;
 };
 

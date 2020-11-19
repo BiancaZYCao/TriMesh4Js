@@ -39,6 +39,7 @@ Plugins implementation - TriMesh:
 - [x] Add Face
 - [x] Set Point
 - [x] Get Points
+- [ ] VertexVertexIter (to find neighbouring vertex)
 - [ ] More Pending ...
 
 ## Tests

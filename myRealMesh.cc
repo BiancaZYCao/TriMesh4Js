@@ -22,7 +22,8 @@ Napi::Object MyMesh::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("addFaceById", &MyMesh:: AddFaceById),
                    InstanceMethod("points", &MyMesh::GetPoints),
                    InstanceMethod("setPointById", &MyMesh::SetPointById),
-                   InstanceMethod("setPoint", &MyMesh::SetPoint)
+                   InstanceMethod("setPoint", &MyMesh::SetPoint),
+                   InstanceMethod("vv", &MyMesh::VVIter)
                    });
 
   // Napi::FunctionReference* constructor = new Napi::FunctionReference();
@@ -88,6 +89,35 @@ Napi::Value MyMesh::AddVertex(const Napi::CallbackInfo& info) {
  
 }
 
+Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
+  TriMesh mesh =  this->myTriMesh_;
+  std::vector<OpenMesh::TriMesh_ArrayKernelT<>::VertexHandle> vhs =  this->vHStorage_;
+  TriMesh::VertexVertexIter    vv_it;
+  if (info.Length() != 1) {
+    Napi::TypeError::New(_env, "Napi VVIter_Err: 1 param expected.").ThrowAsJavaScriptException();
+    return Napi::Number::New(info.Env(), -1);
+  } else {
+    std::vector<TriMesh::VertexHandle>  neighbour_vhandles;
+    std::vector<int>  neighbours_Idx;
+    int numNeigh = 0 ;
+    // int temp_idx = this->ptrVHS; 
+    auto vh = info[0].As<Napi::External<std::vector<TriMesh::VertexHandle>>>().Data(); 
+    int vh_idx = (vh)-(this->ptrVHS); 
+    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
+        neighbour_vhandles.push_back(*vv_it);
+        neighbours_Idx.push_back(vv_it->idx());
+      //  std::cout << "neighbor point vv_it : " << vv_it << std::endl;
+       std::cout << "neighbor point idx : " << vv_it->idx() << "  type: " <<typeid(vv_it->idx()).name()<< std::endl;
+       std::cout << "neighbor point data : " << mesh.point( *vv_it ) << std::endl; 
+        numNeigh++;
+    }
+    Napi::Array neighboursIdxArray = Napi::Array::New(info.Env(),numNeigh);
+    // return Napi::External<std::vector<int>>::New(info.Env(), &neighbours_Idx); 
+    return Napi::Number::New(info.Env(),numNeigh);
+
+  }
+ 
+}
 void MyMesh::AddFace(const Napi::CallbackInfo& info) {
   TriMesh mesh =  this->myTriMesh_;
   std::vector<OpenMesh::TriMesh_ArrayKernelT<>::VertexHandle> vhs =  this->vHStorage_;
