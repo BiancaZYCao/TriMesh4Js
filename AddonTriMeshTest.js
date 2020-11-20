@@ -38,23 +38,28 @@ let vert2 = []
 vert2.push(mesh2.addVertex(1, 2, 0))
 // console.log(temp); // 0
 vert2.push(mesh2.addVertex(1, 0, 0))
-vert2.push(mesh2.addVertex(-1, 0.5, 0))
+vert2.push(mesh2.addVertex(-1, 1, 0))
 vert2.push(mesh2.addVertex(3, 5, 0))
 vert2.push(mesh2.addVertex(4, 0, 0))
-vert2.push(mesh2.addVertex(7, 2, 0))
+vert2.push(mesh2.addVertex(2, -1, 0))
+vert2.push(mesh2.addVertex(-1, -1, 0))
 // console.log(mesh2.getNumFace()) // 5
 // console.log("Js first 3 points of mesh2 (ref)", vert2[0], vert2[1], vert2[2]) //
 // console.log("Js addFaceByRef : vert2[0,1,2]")
-mesh2.addFace(vert2[0], vert2[1], vert2[2])
+mesh2.addFace(vert2[0], vert2[2], vert2[1])
+mesh2.addFace(vert2[0], vert2[3], vert2[2])
 // console.log("Js add 2 more Face By Ref")
-mesh2.addFace(vert2[2], vert2[4], vert2[3])
-mesh2.addFace(vert2[3], vert2[4], vert2[5])
-
+mesh2.addFace(vert2[0], vert2[4], vert2[3])
+mesh2.addFace(vert2[0], vert2[1], vert2[4])
+mesh2.addFace(vert2[5], vert2[4], vert2[1])
 // console.log("Js current num of faces in mesh2 :   ", mesh2.getNumFace()) // 2
 // mesh2.setPoint(vert2[5], [9, 2.9, 1])
 
 vert = []
 let getPointsFromMesh = mesh2.points()
-// console.log("getPointsFromMesh: ", getPointsFromMesh)
-console.log(mesh2.vv(vert2[3]))
+console.log("getPointsFromMesh: ", getPointsFromMesh)
+// console.log("neighbor vert-4 [3,5,0] : ", mesh2.vv(vert2[4]))
+console.log("neighbor vert-5 [2,-1,0] : ", mesh2.vv(vert2[5]))
+console.log("BFS vert-1:", mesh2.bFSNeighWeights(vert2[1]))
+
 // console.log("size: ", getPointsFromMesh.length())

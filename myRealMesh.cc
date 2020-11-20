@@ -25,7 +25,7 @@ Napi::Object MyMesh::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("setPointById", &MyMesh::SetPointById),
                    InstanceMethod("setPoint", &MyMesh::SetPoint),
                    InstanceMethod("vv", &MyMesh::VVIter),
-                   InstanceMethod("bFS", &MyMesh::BFSNeigh)
+                   InstanceMethod("bFSNeighWeights", &MyMesh::BFSNeighWeights)
                    });
 
   // Napi::FunctionReference* constructor = new Napi::FunctionReference();
@@ -121,7 +121,8 @@ Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
   }
  
 }
-Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
+
+Napi::Value MyMesh::BFSNeighWeights(const Napi::CallbackInfo& info) {
   TriMesh mesh =  this->myTriMesh_;
   std::vector<OpenMesh::TriMesh_ArrayKernelT<>::VertexHandle> vhs =  this->vHStorage_;
   TriMesh::VertexVertexIter    vv_it;
@@ -129,28 +130,53 @@ Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(_env, "Napi VVIter_Err: 1 param expected.").ThrowAsJavaScriptException();
     return Napi::Number::New(info.Env(), -1);
   } else {
-    int num_neigh = 0 ;
+    // init Napi:Object-weights and temp_vhs
+    Napi::Object weights = Napi::Object::New(info.Env());
     auto vh = info[0].As<Napi::External<std::vector<TriMesh::VertexHandle>>>().Data(); 
     int vh_idx = (vh)-(this->ptrVHS); 
-    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
-      //  std::cout << "neighbor point idx : " << vv_it->idx() << std::endl;
-      //  std::cout << "neighbor point data : " << mesh.point( *vv_it ) << std::endl; 
-       num_neigh++;
+    weights.Set(vh_idx,(double)0);
+    std::vector<TriMesh::VertexHandle> new_added_points;
+   
+    new_added_points.push_back(vhs[vh_idx]);
+    unsigned int i = 0;
+    while (new_added_points.size()>0){
+       std::vector<TriMesh::VertexHandle> temp_points;
+       temp_points.clear();
+       for (;i<new_added_points.size();i++) {
+          int f = new_added_points[i].idx();
+          for (vv_it=mesh.vv_iter(new_added_points[i]); vv_it.is_valid(); ++vv_it){
+            uint32_t k = (int)vv_it->idx();
+            if (!weights.Has(k)){
+              double weightVal =  weights.Get(f).As<Napi::Number>().DoubleValue() + 1.0; 
+              weights.Set(k,weightVal);
+              temp_points.push_back(*vv_it);
+            }
+          }
+       }
+       new_added_points = temp_points;
     }
-    unsigned int i = 0 ;
-    Napi::Array neighboursVHArray = Napi::Array::New(info.Env(),num_neigh);
-    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
-      std::vector<TriMesh::VertexHandle> * temp_vh_ptr = this->ptrVHS + (int)vv_it->idx();
-      neighboursVHArray[i] = Napi::External<std::vector<TriMesh::VertexHandle>>::New(info.Env(), temp_vh_ptr);
-      // neighboursIdxArray[i] = (int)vv_it->idx();
-      // std::cout << "temp_vh type: " <<typeid(temp_vh).name()<< std::endl;
-      i++;
+    for (i=0;i<mesh.n_vertices();i++){
+      if (!weights.Has(i)){
+        weights.Set(i,1000);
+      }
     }
-    return neighboursVHArray;
+       return weights;
+    }
+    
+    // std::cout << "temp_vhs: " << new_added_points[0] << std::endl;
+    // unsigned int i = 0 ;
+    
+    // for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
+    //   std::vector<TriMesh::VertexHandle> * temp_vh_ptr = this->ptrVHS + (int)vv_it->idx();
+    //   neighboursVHArray[i] = Napi::External<std::vector<TriMesh::VertexHandle>>::New(info.Env(), temp_vh_ptr);
+    //   // neighboursIdxArray[i] = (int)vv_it->idx();
+    //   // std::cout << "temp_vh type: " <<typeid(temp_vh).name()<< std::endl;
+    //   i++;
+    // }
+    
 
   }
  
-}
 void MyMesh::AddFace(const Napi::CallbackInfo& info) {
   TriMesh mesh =  this->myTriMesh_;
   std::vector<OpenMesh::TriMesh_ArrayKernelT<>::VertexHandle> vhs =  this->vHStorage_;
