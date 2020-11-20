@@ -6,6 +6,7 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 
+//internal use snack_case || external use camelCase
 typedef OpenMesh::TriMesh_ArrayKernelT<>  TriMesh;
 
 Napi::FunctionReference MyMesh::constructor;
@@ -23,7 +24,8 @@ Napi::Object MyMesh::Init(Napi::Env env, Napi::Object exports) {
                    InstanceMethod("points", &MyMesh::GetPoints),
                    InstanceMethod("setPointById", &MyMesh::SetPointById),
                    InstanceMethod("setPoint", &MyMesh::SetPoint),
-                   InstanceMethod("vv", &MyMesh::VVIter)
+                   InstanceMethod("vv", &MyMesh::VVIter),
+                   InstanceMethod("bFS", &MyMesh::BFSNeigh)
                    });
 
   // Napi::FunctionReference* constructor = new Napi::FunctionReference();
@@ -97,23 +99,54 @@ Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(_env, "Napi VVIter_Err: 1 param expected.").ThrowAsJavaScriptException();
     return Napi::Number::New(info.Env(), -1);
   } else {
-    std::vector<TriMesh::VertexHandle>  neighbour_vhandles;
-    std::vector<int>  neighbours_Idx;
-    int numNeigh = 0 ;
-    // int temp_idx = this->ptrVHS; 
+    int num_neigh = 0 ;
     auto vh = info[0].As<Napi::External<std::vector<TriMesh::VertexHandle>>>().Data(); 
     int vh_idx = (vh)-(this->ptrVHS); 
     for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
-        neighbour_vhandles.push_back(*vv_it);
-        neighbours_Idx.push_back(vv_it->idx());
-      //  std::cout << "neighbor point vv_it : " << vv_it << std::endl;
-       std::cout << "neighbor point idx : " << vv_it->idx() << "  type: " <<typeid(vv_it->idx()).name()<< std::endl;
-       std::cout << "neighbor point data : " << mesh.point( *vv_it ) << std::endl; 
-        numNeigh++;
+      //  std::cout << "neighbor point idx : " << vv_it->idx() << std::endl;
+      //  std::cout << "neighbor point data : " << mesh.point( *vv_it ) << std::endl; 
+       num_neigh++;
     }
-    Napi::Array neighboursIdxArray = Napi::Array::New(info.Env(),numNeigh);
-    // return Napi::External<std::vector<int>>::New(info.Env(), &neighbours_Idx); 
-    return Napi::Number::New(info.Env(),numNeigh);
+    unsigned int i = 0 ;
+    Napi::Array neighboursVHArray = Napi::Array::New(info.Env(),num_neigh);
+    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
+      std::vector<TriMesh::VertexHandle> * temp_vh_ptr = this->ptrVHS + (int)vv_it->idx();
+      neighboursVHArray[i] = Napi::External<std::vector<TriMesh::VertexHandle>>::New(info.Env(), temp_vh_ptr);
+      // neighboursIdxArray[i] = (int)vv_it->idx();
+      // std::cout << "temp_vh type: " <<typeid(temp_vh).name()<< std::endl;
+      i++;
+    }
+    return neighboursVHArray;
+
+  }
+ 
+}
+Napi::Value MyMesh::VVIter(const Napi::CallbackInfo& info) {
+  TriMesh mesh =  this->myTriMesh_;
+  std::vector<OpenMesh::TriMesh_ArrayKernelT<>::VertexHandle> vhs =  this->vHStorage_;
+  TriMesh::VertexVertexIter    vv_it;
+  if (info.Length() != 1) {
+    Napi::TypeError::New(_env, "Napi VVIter_Err: 1 param expected.").ThrowAsJavaScriptException();
+    return Napi::Number::New(info.Env(), -1);
+  } else {
+    int num_neigh = 0 ;
+    auto vh = info[0].As<Napi::External<std::vector<TriMesh::VertexHandle>>>().Data(); 
+    int vh_idx = (vh)-(this->ptrVHS); 
+    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
+      //  std::cout << "neighbor point idx : " << vv_it->idx() << std::endl;
+      //  std::cout << "neighbor point data : " << mesh.point( *vv_it ) << std::endl; 
+       num_neigh++;
+    }
+    unsigned int i = 0 ;
+    Napi::Array neighboursVHArray = Napi::Array::New(info.Env(),num_neigh);
+    for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
+      std::vector<TriMesh::VertexHandle> * temp_vh_ptr = this->ptrVHS + (int)vv_it->idx();
+      neighboursVHArray[i] = Napi::External<std::vector<TriMesh::VertexHandle>>::New(info.Env(), temp_vh_ptr);
+      // neighboursIdxArray[i] = (int)vv_it->idx();
+      // std::cout << "temp_vh type: " <<typeid(temp_vh).name()<< std::endl;
+      i++;
+    }
+    return neighboursVHArray;
 
   }
  
