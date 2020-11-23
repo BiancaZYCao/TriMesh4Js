@@ -142,7 +142,7 @@ Napi::Value MyMesh::BFSNeighWeights(const Napi::CallbackInfo& info) {
     while (new_added_points.size()>0){
        std::vector<TriMesh::VertexHandle> temp_points;
        temp_points.clear();
-       for (;i<new_added_points.size();i++) {
+       for (i=0;i<new_added_points.size();i++) {
           int f = new_added_points[i].idx();
           for (vv_it=mesh.vv_iter(new_added_points[i]); vv_it.is_valid(); ++vv_it){
             uint32_t k = (int)vv_it->idx();
@@ -162,17 +162,6 @@ Napi::Value MyMesh::BFSNeighWeights(const Napi::CallbackInfo& info) {
     }
        return weights;
     }
-    
-    // std::cout << "temp_vhs: " << new_added_points[0] << std::endl;
-    // unsigned int i = 0 ;
-    
-    // for (vv_it=mesh.vv_iter(vhs[vh_idx]); vv_it.is_valid(); ++vv_it){
-    //   std::vector<TriMesh::VertexHandle> * temp_vh_ptr = this->ptrVHS + (int)vv_it->idx();
-    //   neighboursVHArray[i] = Napi::External<std::vector<TriMesh::VertexHandle>>::New(info.Env(), temp_vh_ptr);
-    //   // neighboursIdxArray[i] = (int)vv_it->idx();
-    //   // std::cout << "temp_vh type: " <<typeid(temp_vh).name()<< std::endl;
-    //   i++;
-    // }
     
 
   }
