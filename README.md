@@ -39,7 +39,8 @@ Plugins implementation - TriMesh:
 - [x] Add Face
 - [x] Set Point
 - [x] Get Points
-- [ ] VertexVertexIter (to find neighbouring vertex)
+- [x] VertexVertexIter (to find neighbouring vertex)
+- [x] BFS NeighWeights (loop through the whole mesh)
 - [ ] More Pending ...
 
 ## Tests
