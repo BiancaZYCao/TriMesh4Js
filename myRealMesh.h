@@ -31,7 +31,6 @@ class MyMesh : public Napi::ObjectWrap<MyMesh> {
   Napi::Value VVIter(const Napi::CallbackInfo& info);
   Napi::Value BFSNeighWeights(const Napi::CallbackInfo& info);
 
-  // int valueOfFace;
 };
 
 #endif

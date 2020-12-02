@@ -10,7 +10,7 @@ The aim of the project is to provide a FFI between JavaScript running in Node.js
 
 ## Prerequisites
 
-Before starting to use MAVJS you need to assure you have the following prerequisites:
+Before starting to use this you need to assure you have the following prerequisites:
 
 - **Node.js**: see [download and install Node.js](https://nodejs.org/en/download/) Node.js 14.0 or higher is required.
 - **node-gyp**: see [node-gyp](https://github.com/nodejs/node-gyp)
